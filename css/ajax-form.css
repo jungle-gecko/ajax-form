@@ -1,0 +1,9 @@
+@import '../bootstrap/css/custom-bootstrap.css';
+
+.ajaxform .alert {
+	margin: 15px 15px 0 15px;
+}
+
+.ajaxform .alert .alert-text {
+	margin-left: 15px;
+}
