@@ -1,10 +1,4 @@
-[
-    {
-        "code": "success",
-        "phrase": "Votre demande a bien été prise en compte."
-    },
-    {
-        "code": "error",
-        "phrase": "Erreur inattendue ({0}). Veuillez réessayer plus tard."
-    }
-]
+{
+    "success": "Votre demande a bien été prise en compte.",
+    "error": "Erreur inattendue ({0}). Veuillez réessayer plus tard."
+}

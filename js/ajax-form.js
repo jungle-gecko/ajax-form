@@ -1,9 +1,11 @@
 +function ($) {
 	
+	var ajaxFormScriptURL = $("script[src]").last().attr("src").split('?')[0].split('/').slice(0, -2).join('/')+'/';
+	
 	var AjaxForm = function (element, options)
 	{
 		var myAjaxForm = this;
-		myAjaxForm.getCurrentScriptURL();
+		//myAjaxForm.getCurrentScriptURL();
 		
 		myAjaxForm.options = $.extend(true, {}, $.fn.ajaxform.defaults, options);
 		myAjaxForm.$form = $(element);
@@ -93,8 +95,10 @@
 		});
 	};
 	
+	/*
 	AjaxForm.prototype.getCurrentScriptURL = function()
 	{
+		console.log(document.querySelectorAll( 'script[src]' ));
 		if (this.currentScriptURL == null) {
 			var scripts = document.querySelectorAll( 'script[src]' );
 		    var currentScript = scripts[ scripts.length - 1 ].src;
@@ -105,9 +109,10 @@
 		    	this.currentScriptURL += currentScriptChunks [i] + '/';
 		    }
 		}
-		
+		console.log("currentScriptURL = " + this.currentScriptURL);
 		return this.currentScriptURL;
 	}
+	*/
 	
 	AjaxForm.prototype.loadJSONResource = function(resource)
 	{
@@ -131,7 +136,8 @@
 		var myAjaxForm = this;
 		
 		if (myAjaxForm.localizedTexts == null) {
-			myAjaxForm.localizedTexts = myAjaxForm.loadJSONResource(this.getCurrentScriptURL() + 'locales/' + myAjaxForm.options.locale + '/ajax-form-texts.json');
+//			myAjaxForm.localizedTexts = myAjaxForm.loadJSONResource(this.getCurrentScriptURL() + 'locales/' + myAjaxForm.options.locale + '/ajax-form-texts.json');
+			myAjaxForm.localizedTexts = myAjaxForm.loadJSONResource(ajaxFormScriptURL + 'locales/' + myAjaxForm.options.locale + '/ajax-form-texts.json');
 		}
 		var text = myAjaxForm.localizedTexts[key];
 		if (text !== 'undefined' && params != null && params instanceof Array) {
