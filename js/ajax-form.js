@@ -5,7 +5,6 @@
 	var AjaxForm = function (element, options)
 	{
 		var myAjaxForm = this;
-		//myAjaxForm.getCurrentScriptURL();
 		
 		myAjaxForm.options = $.extend(true, {}, $.fn.ajaxform.defaults, options);
 		myAjaxForm.$form = $(element);
@@ -95,25 +94,6 @@
 		});
 	};
 	
-	/*
-	AjaxForm.prototype.getCurrentScriptURL = function()
-	{
-		console.log(document.querySelectorAll( 'script[src]' ));
-		if (this.currentScriptURL == null) {
-			var scripts = document.querySelectorAll( 'script[src]' );
-		    var currentScript = scripts[ scripts.length - 1 ].src;
-		    var currentScriptChunks = currentScript.split( '/' );
-
-		    this.currentScriptURL = "";
-		    for (var i = 0; i < currentScriptChunks.length - 2 ; i++) {
-		    	this.currentScriptURL += currentScriptChunks [i] + '/';
-		    }
-		}
-		console.log("currentScriptURL = " + this.currentScriptURL);
-		return this.currentScriptURL;
-	}
-	*/
-	
 	AjaxForm.prototype.loadJSONResource = function(resource)
 	{
 		var resourceContent = null;
@@ -136,11 +116,10 @@
 		var myAjaxForm = this;
 		
 		if (myAjaxForm.localizedTexts == null) {
-//			myAjaxForm.localizedTexts = myAjaxForm.loadJSONResource(this.getCurrentScriptURL() + 'locales/' + myAjaxForm.options.locale + '/ajax-form-texts.json');
 			myAjaxForm.localizedTexts = myAjaxForm.loadJSONResource(ajaxFormScriptURL + 'locales/' + myAjaxForm.options.locale + '/ajax-form-texts.json');
 		}
 		var text = myAjaxForm.localizedTexts[key];
-		if (text !== 'undefined' && params != null && params instanceof Array) {
+		if (text !== 'undefined' && text != null && params != null && params instanceof Array) {
 			for (var i = 0; i < params.length; i++) {
 				text = text.replace('{' + i + '}', params[i]);
 			}
