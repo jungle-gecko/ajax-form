@@ -152,6 +152,7 @@
 					for (var i = 0; i < content[property].length; i++)
 					{
 						message += '<br/> &bull; ' + content[property][i];
+						myAjaxForm.$form.find('[name=' + property + ']').closest('.form-group').addClass('has-error');
 					}
 				}
 			}
@@ -173,13 +174,14 @@
 		// In case of errors array
 		if (typeof content !== 'undefined' && typeof content.errors !== 'undefined')
 		{
-			for (var property in result.errors) 
+			for (var property in content.errors) 
 			{
-				if (result.errors.hasOwnProperty(property))
+				if (content.errors.hasOwnProperty(property))
 				{
-					for (var i = 0; i < result.errors[property].length; i++)
+					for (var i = 0; i < content.errors[property].length; i++)
 					{
-						message += '<br/> &bull; ' + result.errors[property][i];
+						message += '<br/> &bull; ' + content.errors[property][i];
+						myAjaxForm.$form.find('[name=' + property + ']').closest('.form-group').addClass('has-error');
 					}
 				}
 			}
@@ -203,7 +205,8 @@
 			myAjaxForm.$form.find('.ajax-form_success_box, .ajax-form_error_box').slideUp('fast')
 		).then(function()
 		{
-			myAjaxForm.$form.find('.ajax-form_success_message, .ajax-form_error_message').empty();
+			myAjaxForm.$form.find('.ajax-form_success_message, .ajax-form_error_message').empty();;
+			myAjaxForm.$form.find('.has-error').removeClass('has-error');
 		});
 	};
 	
