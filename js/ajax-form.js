@@ -212,6 +212,8 @@
 	
 	AjaxForm.prototype.clearAlert = function($alert)
 	{
+		var myAjaxForm = this;
+		
 		$.when(
 			$alert.slideUp('fast')
 		).then(function()
