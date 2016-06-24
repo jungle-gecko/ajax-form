@@ -205,7 +205,7 @@
 			myAjaxForm.$form.find('.ajax-form_success_box, .ajax-form_error_box').slideUp('fast')
 		).then(function()
 		{
-			myAjaxForm.$form.find('.ajax-form_success_message, .ajax-form_error_message').empty();;
+			myAjaxForm.$form.find('.ajax-form_success_message, .ajax-form_error_message').empty();
 			myAjaxForm.$form.find('.has-error').removeClass('has-error');
 		});
 	};
@@ -217,6 +217,7 @@
 		).then(function()
 		{
 			$alert.find('.ajax-form_success_message, .ajax-form_error_message').empty();
+			myAjaxForm.$form.find('.has-error').removeClass('has-error');
 		});
 	};
 	
