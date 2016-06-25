@@ -46,11 +46,11 @@
 
 			event.stopPropagation();
 			event.preventDefault();
-			
-			$.when(myAjaxForm.clearAlerts()).then(function()
+
+			myAjaxForm.clearAlerts(function()
 			{
 				var data = myAjaxForm.$form.serialize();
-					
+
 				var submission = $.ajax({
 					type: myAjaxForm.$form.attr('method') || 'post',
 					url: myAjaxForm.$form.attr('action'),
@@ -197,7 +197,7 @@
 		myAjaxForm.$form.find('.ajax-form_' + type + '_box').slideDown();
 	};
 	
-	AjaxForm.prototype.clearAlerts = function()
+	AjaxForm.prototype.clearAlerts = function(callback)
 	{
 		var myAjaxForm = this;
 		
@@ -207,10 +207,15 @@
 		{
 			myAjaxForm.$form.find('.ajax-form_success_message, .ajax-form_error_message').empty();
 			myAjaxForm.$form.find('.has-error').removeClass('has-error');
+
+			if (typeof callback === "function")
+			{
+				callback();
+			}
 		});
 	};
 	
-	AjaxForm.prototype.clearAlert = function($alert)
+	AjaxForm.prototype.clearAlert = function($alert, callback)
 	{
 		var myAjaxForm = this;
 		
@@ -220,6 +225,11 @@
 		{
 			$alert.find('.ajax-form_success_message, .ajax-form_error_message').empty();
 			myAjaxForm.$form.find('.has-error').removeClass('has-error');
+
+			if (typeof callback === "function")
+			{
+				callback();
+			}
 		});
 	};
 	
