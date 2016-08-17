@@ -1,4 +1,5 @@
 +function ($) {
+	'use strict';
 	
 	var ajaxFormScriptURL = $("script[src]").last().attr("src").split('?')[0].split('/').slice(0, -2).join('/')+'/';
 	
@@ -15,31 +16,65 @@
 			myAjaxForm.$form.submit();
 		});
 		
-		myAjaxForm.$form.find('.ajax-form_success_box').remove();
-		myAjaxForm.$form.find('.ajax-form_error_box').remove();
-		myAjaxForm.$form.prepend(
-				'<div class="container-fluid">' +
-				'	<div class="ajax-form_success_box hidden">' +
-				'		<div class="alert alert-success alert-dismissible">' +
-				'			<button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
-				'			<span class="glyphicon glyphicon-ok"></span>' +
-				'			<span class="alert-text ajax-form_success_message"></span>' +
-				'		</div>' +
-				'	</div>' +
-				'	<div class="ajax-form_error_box hidden">' +
-				'		<div class="alert alert-danger alert-dismissible">' +
-				'			<button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
-				'			<span class="glyphicon glyphicon-exclamation-sign"></span>' +
-				'			<span class="alert-text ajax-form_error_message"></span>' +
-				'		</div>' +
-				'	</div>' +
-				'</div>'
-		);
-	
-		myAjaxForm.$form.find('.ajax-form_success_box, .ajax-form_error_box').hide().removeClass('hidden');
+		if (myAjaxForm.options.placeholders.both != null) {
+			myAjaxForm.options.placeholders.success = myAjaxForm.options.placeholders.both;
+			myAjaxForm.options.placeholders.error = myAjaxForm.options.placeholders.both;
+		}
+		else {
+			if (myAjaxForm.options.placeholders.success == null) {
+				myAjaxForm.options.placeholders.success = '.ajax-form_success_placeholder';
+				myAjaxForm.$form.find(myAjaxForm.options.placeholders.success).remove(); // TODO check if required to remove parent .container-fluid
+				myAjaxForm.$form.prepend(
+						'<div class="container-fluid">' +
+						'	<div class="ajax-form_success_placeholder hidden">' +
+						'		<div class="alert alert-success alert-dismissible">' +
+						'			<button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+						'			<span class="glyphicon glyphicon-ok"></span>' +
+						'			<span class="alert-text ajax-form_message"></span>' +
+						'		</div>' +
+						'	</div>' +
+						'</div>'
+				);
+				myAjaxForm.$form.find(myAjaxForm.options.placeholders.success).hide().removeClass('hidden');
+			}
+
+			if (myAjaxForm.options.placeholders.error == null) {
+				myAjaxForm.options.placeholders.error = '.ajax-form_error_placeholder';
+				myAjaxForm.$form.find(myAjaxForm.options.placeholders.error).remove(); // TODO check if required to remove parent .container-fluid
+				myAjaxForm.$form.prepend(
+						'<div class="container-fluid">' +
+						'	<div class="ajax-form_error_placeholder hidden">' +
+						'		<div class="alert alert-danger alert-dismissible">' +
+						'			<button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+						'			<span class="glyphicon glyphicon-exclamation-sign"></span>' +
+						'			<span class="alert-text ajax-form_message"></span>' +
+						'		</div>' +
+						'	</div>' +
+						'</div>'
+				);
+				myAjaxForm.$form.find(myAjaxForm.options.placeholders.error).hide().removeClass('hidden');
+			}
+		}
 		
+		myAjaxForm.options.placeholders.any = myAjaxForm.options.placeholders.success + ', ' + myAjaxForm.options.placeholders.error;
+		
+		if (myAjaxForm.options.transitions.show.both != null) {
+			myAjaxForm.options.transitions.show.success = myAjaxForm.options.transitions.show.both;
+			myAjaxForm.options.transitions.show.error = myAjaxForm.options.transitions.show.both;
+		}
+		
+		if (myAjaxForm.options.transitions.hide.both != null) {
+			myAjaxForm.options.transitions.hide.success = myAjaxForm.options.transitions.hide.both;
+			myAjaxForm.options.transitions.hide.error = myAjaxForm.options.transitions.hide.both;
+		}
+		
+		if (myAjaxForm.options.callbacks.both != null) {
+			myAjaxForm.options.callbacks.success = myAjaxForm.options.callbacks.both;
+			myAjaxForm.options.callbacks.error = myAjaxForm.options.callbacks.both;
+		}
+	
 		myAjaxForm.$form.find('button.close').click(function() {
-			myAjaxForm.clearAlert($(this).parent().parent());
+			myAjaxForm.clearAlert($(this).closest(myAjaxForm.options.placeholders.any));
 		});
 		
 		myAjaxForm.$form.submit(function(event) {
@@ -47,51 +82,82 @@
 			event.stopPropagation();
 			event.preventDefault();
 
-			myAjaxForm.clearAlerts(function()
-			{
-				var data = myAjaxForm.$form.serialize();
-
-				var submission = $.ajax({
-					type: myAjaxForm.$form.attr('method') || 'post',
-					url: myAjaxForm.$form.attr('action'),
-					data: data,
-					dataType: "json",
-					timeout: myAjaxForm.options.timeout
-				})
-				.done(function(result, status, jqXHR)
+			myAjaxForm.clearAlert(
+				myAjaxForm.$form.find(myAjaxForm.options.placeholders.any),
+				function()
 				{
-					if (typeof result.code !== 'undefined' && result.code === 0)
-					{
-						myAjaxForm.showAlert('success', jqXHR);
-						
-						if (myAjaxForm.options.resetOnSuccess == true) 
-						{
-							myAjaxForm.$form[0].reset();
-						}
+					var data = myAjaxForm.$form.serialize();
 	
-						if (typeof myAjaxForm.options.callback === "function")
+					var submission = $.ajax({
+						type: myAjaxForm.$form.attr('method') || 'post',
+						url: myAjaxForm.$form.attr('action'),
+						data: data,
+						dataType: "json",
+						timeout: myAjaxForm.options.timeout
+					})
+					.done(function(result, status, jqXHR)
+					{
+						if (typeof result.code !== 'undefined' && result.code === 0)
 						{
-							if (typeof result.callback_vars !== 'undefined')
+							myAjaxForm.showAlert('success', jqXHR);
+							
+							if (myAjaxForm.options.resetOnSuccess == true) 
 							{
-								myAjaxForm.options.callback(result.callback_vars);
+								myAjaxForm.$form[0].reset();
+							}
+		
+							if ($.isFunction(myAjaxForm.options.callbacks.success))
+							{
+								if (typeof result.callback_vars !== 'undefined')
+								{
+									myAjaxForm.options.callbacks.success(myAjaxForm, result.callback_vars);
+								}
+								else
+								{
+									myAjaxForm.options.callbacks.success(myAjaxForm);
+								}	
+							}
+						}
+						else
+						{
+							myAjaxForm.showAlert('error', jqXHR);
+							
+							if ($.isFunction(myAjaxForm.options.callbacks.error))
+							{
+								if (typeof result.callback_vars !== 'undefined')
+								{
+									myAjaxForm.options.callbacks.error(myAjaxForm, result.callback_vars);
+								}
+								else
+								{
+									myAjaxForm.options.callbacks.error(myAjaxForm);
+								}	
+							}
+						}
+					})
+					.fail(function(jqXHR, status, errorThrown)
+					{
+						myAjaxForm.showAlert('error', jqXHR);
+						
+						if ($.isFunction(myAjaxForm.options.callbacks.error))
+						{
+							if (typeof jqXHR.callback_vars !== 'undefined')
+							{
+								myAjaxForm.options.callbacks.error(myAjaxForm, jqXHR.callback_vars);
 							}
 							else
 							{
-								myAjaxForm.options.callback();
+								myAjaxForm.options.callbacks.error(myAjaxForm);
 							}	
 						}
-					}
-					else
-					{
-						myAjaxForm.showAlert('error', jqXHR);
-					}
-				})
-				.fail(function(jqXHR, status, errorThrown)
-				{
-					myAjaxForm.showAlert('error', jqXHR);
-				});
-			});
+					});
+				}
+			);
 		});
+		
+		if ($.isFunction(myAjaxForm.options.init)) {
+			myAjaxForm.options.init(myAjaxForm);
+		}
 	};
 	
 	AjaxForm.prototype.loadJSONResource = function(resource)
@@ -193,40 +259,34 @@
 			message = myAjaxForm.getLocalizedText(type, [jqXHR.statusText]);
 		}
 		
-		myAjaxForm.$form.find('.ajax-form_' + type + '_message').html(message);
-		myAjaxForm.$form.find('.ajax-form_' + type + '_box').slideDown();
+		// Setting message
+		var placeholderSelector = eval('myAjaxForm.options.placeholders.' + type);
+		var $placeholder = myAjaxForm.$form.find(placeholderSelector);
+		myAjaxForm.$form.find($placeholder).find('.ajax-form_message').html(message);
+
+		// Starting transition
+		myAjaxForm.options.transitions.show($placeholder);
 	};
 	
-	AjaxForm.prototype.clearAlerts = function(callback)
+	AjaxForm.prototype.clearAllAlerts = function(callback)
+	{
+		var myAjaxForm = this;
+		
+		myAjaxForm.clearAlert(myAjaxForm.$form.find(myAjaxForm.options.placeholders.any), callback);
+	}
+	
+	AjaxForm.prototype.clearAlert = function($placeholder, callback)
 	{
 		var myAjaxForm = this;
 		
 		$.when(
-			myAjaxForm.$form.find('.ajax-form_success_box, .ajax-form_error_box').slideUp('fast')
+			myAjaxForm.options.transitions.hide($placeholder)
 		).then(function()
 		{
-			myAjaxForm.$form.find('.ajax-form_success_message, .ajax-form_error_message').empty();
+			$placeholder.find('.ajax-form_message, .ajax-form_message').empty();
 			myAjaxForm.$form.find('.has-error').removeClass('has-error');
 
-			if (typeof callback === "function")
-			{
-				callback();
-			}
-		});
-	};
-	
-	AjaxForm.prototype.clearAlert = function($alert, callback)
-	{
-		var myAjaxForm = this;
-		
-		$.when(
-			$alert.slideUp('fast')
-		).then(function()
-		{
-			$alert.find('.ajax-form_success_message, .ajax-form_error_message').empty();
-			myAjaxForm.$form.find('.has-error').removeClass('has-error');
-
-			if (typeof callback === "function")
+			if ($.isFunction(callback))
 			{
 				callback();
 			}
@@ -259,10 +319,34 @@
 	};
 	
 	$.fn.ajaxform.defaults = {
-		timeout: 60000,
+		placeholders: {
+			both: null,
+			error: null,
+			success: null
+		},
+		transitions: {
+			show: function($placeholder) {
+				$placeholder.css('opacity', 0).slideDown().animate(
+					{ opacity: 1 },
+					{ queue: false }
+				);
+			},
+			hide: function($placeholder) {
+				$placeholder.slideUp().animate(
+					{ opacity: 0 },
+					{ queue: false }
+				);
+			}
+		},
+		callbacks: {
+			both: null,
+			error: null,
+			success: null
+		},
+		init: null,
 		locale: 'en',
 		resetOnSuccess: true,
-		callback: function() {}
+		timeout: 60000
 	};
 
 }(jQuery);
